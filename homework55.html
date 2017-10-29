@@ -1,0 +1,146 @@
+<canvas id="canvas" width="1200" height="700"></canvas>
+
+<script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+  
+  
+
+    const RectsIntersection = function(rect1X, rect1Y, rect1W, rect1H, rect2X, rect2Y, rect2W, rect2H) {
+    return rect1X < rect2X + rect2W && rect1X + rect1W > rect2X && rect1Y < rect2Y + rect2H && rect1H + rect1Y > rect2Y;
+    };
+    const backgroundimg = new Image();  
+    backgroundimg.src = 'https://data.whicdn.com/images/300332860/large.jpg'; 
+    
+    const heroimg = new Image();
+    heroimg.src = 'http://img15.deviantart.net/257d/i/2013/276/4/a/lovin_oven_dog_by_mannydragon5-d6p3i1h.png';
+
+    const badguysimg = new Image();
+    badguysimg.src = 'http://familypet.s3.amazonaws.com/wp-content/uploads/2014/07/scratchy.png';
+
+    const rand = function(num) {
+      return Math.floor(Math.random() * num) + 1;
+    };
+       
+  const gameData = {
+    hero: {
+      x: 100,
+      y: 100,
+      img: heroimg,
+      width: 110,
+      height: 140,
+      xDelta: 5,
+      yDelta: 5
+    }
+  };
+
+
+  //bad guyseri hamar
+  const badd = function(number){
+    const array = [];
+    const helper = function (n){
+    if (n === number) {
+      return;
+  }
+    array.push({
+      x: rand(canvas.width - 110),
+      y: rand(canvas.height -140),
+      img: badguysimg,
+      width: 110,
+      height: 140,
+      xDelta: 5,
+      yDelta: 5 });
+     helper(n + 1) 
+    };
+   helper(0);
+   return array;
+  };
+
+  const bad = badd(5);
+    const foreach = function(arr, func) {
+    const helper = function(idx) {
+      if(idx === arr.length)
+        return;
+      
+      func(arr[idx]);
+      helper(idx + 1); 
+    };
+    helper(0);
+  };
+  const draw = function (){
+    ctx.drawImage(backgroundimg, 0, 0, canvas.width, canvas.height);
+    
+    
+    const hero = gameData.hero;
+    ctx.drawImage(hero.img, hero.x, hero.y, hero.width, hero.height);
+    
+    foreach(bad, function(b) {
+    ctx.drawImage(b.img, b.x, b.y, b.width, b.height);
+    });
+  }
+  const updateData = function(){
+  foreach(bad, function(b) {
+    b.x +=  b.xDelta;
+    b.y +=  b.yDelta;
+    if (b.x + b.width >= canvas.width || b.x <= 0){
+      b.xDelta = - b.xDelta ;
+    } 
+    if (b.y + b.height >= canvas.height || b.y <=0){
+      b.yDelta = - b.yDelta ;
+    }
+    if(RectsIntersection(b.x, b.y, b.width, b.height, gameData.hero.x, gameData.hero.y, gameData.hero.width, gameData.hero.height)) {
+      alert("game over");
+      location.reload();
+    }
+    });
+    
+
+  };
+
+
+
+  const loop = function(){
+  
+   draw();
+    updateData();
+    requestAnimationFrame(loop);
+    
+  };
+  
+  loop();
+  
+    const leftKey = 37;
+  const upKey = 38;
+  const rightKey = 39;
+  const downKey = 40;
+
+  document.addEventListener('keydown', function(event) {
+      const hero = gameData.hero;
+    if(event.keyCode === rightKey) {
+      hero.x = hero.x + 5;
+      if(hero.x >= canvas.width - hero.width){
+      hero.x = 1;
+      }
+      } else if(event.keyCode === leftKey) {
+          hero.x = hero.x - 5;
+          if(hero.x <= 0){
+            hero.x = canvas.width - hero.width;}
+          
+        } else if(event.keyCode === upKey){
+          hero.y= hero.y - 5;
+          if(hero.y <= 0-hero.height){
+          hero.y= canvas.height;          }
+        }
+      
+      
+      else if(event.keyCode === downKey){
+          hero.y = hero.y + 5;
+          if(hero.y >= canvas.height + hero.height){
+            hero.y = -hero.height;
+      }
+    }
+
+  },false);
+  
+
+ </script>
